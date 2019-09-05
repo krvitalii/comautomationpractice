@@ -2,6 +2,7 @@ package lesson05;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.*;
+import org.junit.rules.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,6 +18,9 @@ public class MyFirstTest {
     static List<WebElement> Tips;
     static String FirstTip;
     static String SearchText = "Dress";
+
+    @Rule
+    public ErrorCollector collector = new ErrorCollector();
 
     @BeforeClass
     public static void setUp() {
@@ -70,15 +74,6 @@ public class MyFirstTest {
 
     @Test(timeout = 5000l)
     public void verifyAllTipsAreCorrect_viaStream() {
-        List<AssertionError> errorS = new ArrayList<>();
-        Tips.stream().forEach(s -> {
-            try {
-                Assert.assertThat(s.getText(), CoreMatchers.containsString(SearchText));
-            } catch (AssertionError e) {
-                errorS.add(e);
-                e.printStackTrace();
-            }
-        });
-        Assert.assertTrue("Some tip text was wrong", errorS.isEmpty());
+        Tips.stream().forEach(s -> collector.checkThat(s.getText(), CoreMatchers.containsString(SearchText)));
     }
 }
