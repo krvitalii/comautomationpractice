@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class MyFirstTest {
@@ -70,6 +70,15 @@ public class MyFirstTest {
 
     @Test(timeout = 5000l)
     public void verifyAllTipsAreCorrect_viaStream() {
-        Tips.stream().forEach(s -> Assert.assertThat(s.getText(), CoreMatchers.containsString(SearchText)));
+        List<AssertionError> errorS = new ArrayList<>();
+        Tips.stream().forEach(s -> {
+            try {
+                Assert.assertThat(s.getText(), CoreMatchers.containsString(SearchText));
+            } catch (AssertionError e) {
+                errorS.add(e);
+                e.printStackTrace();
+            }
+        });
+        Assert.assertTrue("Some tip text was wrong", errorS.isEmpty());
     }
 }
